@@ -9,34 +9,6 @@ const plainCredential = customerKey + ':' + customerSecret;
 // Encode with base64
 const encodedCredential = Buffer.from(plainCredential).toString('base64');
 
-// authorizationField = "Basic " + encodedCredential
-
-// // Set request parameters
-// const options = {
-//   hostname: 'api.agora.io',
-//   port: 443,
-//   path: '/dev/v1/projects',
-//   method: 'GET',
-//   headers: {
-//     'Authorization':authorizationField,
-//     'Content-Type': 'application/json'
-//   }
-// }
-
-// // Create request object and send request
-// const req = https.request(options, res => {
-//   console.log(`Status code: ${res.statusCode}`)
-
-//   res.on('data', d => {
-//     process.stdout.write(d)
-//   })
-// })
-
-// req.on('error', error => {
-//   console.error(error)
-// })
-
-// req.end()
 const express = require('express');
 const app = express();
 const axios = require('axios');
@@ -45,15 +17,14 @@ app.use(express.json());
 
 app.use(cors());
 
-const Authorization = `Basic ${Buffer.from(
-  `${customerKey}:${customerSecret}`
-).toString('base64')}`;
-
 const AppId = '306d86f1ec2644c3affab320daef132c';
 
 app.get('/', (req, res) => res.send('Agora Cloud Recording Server'));
 
 app.post('/acquire', async (req, res) => {
+  const Authorization = `Basic ${Buffer.from(
+    `${customerKey}:${customerSecret}`
+  ).toString('base64')}`;
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${AppId}/cloud_recording/acquire`,
     {
@@ -70,6 +41,9 @@ app.post('/acquire', async (req, res) => {
 });
 
 app.post('/start', async (req, res) => {
+  const Authorization = `Basic ${Buffer.from(
+    `${customerKey}:${customerSecret}`
+  ).toString('base64')}`;
   const appID = AppId;
   const resource = req.body.resource;
   const mode = req.body.mode;
@@ -135,6 +109,9 @@ app.post('/stop', async (req, res) => {
   res.send(stop.data);
 });
 app.post('/query', async (req, res) => {
+  const Authorization = `Basic ${Buffer.from(
+    `${customerKey}:${customerSecret}`
+  ).toString('base64')}`;
   const appID = AppId;
   const resource = req.body.resource;
   const sid = req.body.sid;
