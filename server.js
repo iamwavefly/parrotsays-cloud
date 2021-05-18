@@ -43,17 +43,16 @@ const axios = require('axios');
 const cors = require('cors');
 app.use(express.json());
 
-// CORS FUNC CONFIG
-// app.use(function (req, res, next) {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header(
-//     'Access-Control-Allow-Headers',
-//     'Origin, X-Requested-With, Content-Type, Accept'
-//   );
-//   next();
-// });
-
 app.use(cors());
+// CORS FUNC CONFIG
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
 
 const Authorization = `Basic ${Buffer.from(
   `${customerKey}:${customerSecret}`
@@ -83,48 +82,62 @@ app.post('/start', async (req, res) => {
   const appID = AppId;
   const resource = req.body.resource;
   const mode = req.body.mode;
-  try {
-    const start = await axios.post(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
-      {
-        cname: req.body.channel,
-        uid: req.body.uid,
-        clientRequest: {
-          token: req.body.token,
-          recordingConfig: {
-            maxIdleTime: 400,
-            streamTypes: 2,
-            channelType: 1,
-            videoStreamType: 0,
-            transcodingConfig: {
-              height: 360,
-              width: 640,
-              bitrate: 500,
-              fps: 15,
-              mixedVideoLayout: 1,
-              backgroundColor: '#FFFFFF',
-              backgroundImage: 'https://i.ibb.co/98y9ZSN/parrotsays.jpg',
-            },
-          },
-          recordingFileConfig: {
-            avFileType: ['hls', 'mp4'],
-          },
-          storageConfig: {
-            vendor: 1,
-            region: 5,
-            bucket: 'parrotrelease',
-            accessKey: 'AKIAZJZ4IZ3VYZBRLFFY',
-            secretKey: '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',
-            fileNamePrefix: ['liveStream', 'videos'],
+
+  const start = await axios.post(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
+    {
+      cname: req.body.channel,
+      uid: req.body.uid,
+      clientRequest: {
+        token: req.body.token,
+        recordingConfig: {
+          maxIdleTime: 400,
+          streamTypes: 2,
+          channelType: 1,
+          videoStreamType: 0,
+          transcodingConfig: {
+            height: 360,
+            width: 640,
+            bitrate: 500,
+            fps: 15,
+            mixedVideoLayout: 1,
+            backgroundColor: '#FFFFFF',
+            backgroundImage: 'https://i.ibb.co/98y9ZSN/parrotsays.jpg',
           },
         },
+        // extensionServiceConfig: {
+        //   errorHandlePolicy: 'error_abort',
+        //   extensionServices: [
+        //     {
+        //       serviceName: 'web_recorder_service',
+        //       errorHandlePolicy: 'error_abort',
+        //       serviceParam: {
+        //         url: 'http://localhost:3000/?user_id=test&username=testhttp://localhost:3000/',
+        //         audioProfile: 0,
+        //         videoWidth: 1280,
+        //         videoHeight: 720,
+        //         maxRecordingHour: 72,
+        //       },
+        //     },
+        //   ],
+        // },
+        recordingFileConfig: {
+          avFileType: ['hls', 'mp4'],
+        },
+        storageConfig: {
+          vendor: 1,
+          region: 5,
+          bucket: 'parrotrelease',
+          accessKey: 'AKIAZJZ4IZ3VYZBRLFFY',
+          secretKey: '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',
+          fileNamePrefix: ['liveStream', 'videos'],
+        },
       },
-      { headers: { Authorization } }
-    );
-    res.send(start.data);
-  } catch (error) {
-    console.error(error);
-  }
+    },
+    { headers: { Authorization } }
+  );
+
+  res.send(start.data);
 });
 
 app.post('/query', async (req, res) => {
@@ -146,20 +159,16 @@ app.post('/stop', async (req, res) => {
   const sid = req.body.sid;
   const mode = req.body.mode;
 
-  try {
-    const stop = await axios.post(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
-      {
-        cname: req.body.channel,
-        uid: req.body.uid,
-        clientRequest: {},
-      },
-      { headers: { Authorization } }
-    );
-    res.send(stop.data);
-  } catch (error) {
-    console.error(error);
-  }
+  const stop = await axios.post(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+    {
+      cname: req.body.channel,
+      uid: req.body.uid,
+      clientRequest: {},
+    },
+    { headers: { Authorization } }
+  );
+  res.send(stop.data);
 });
 
 app.post('/updateSubscription', async (req, res) => {
