@@ -44,25 +44,16 @@ const cors = require('cors');
 app.use(express.json());
 
 // CORS FUNC CONFIG
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept'
+//   );
+//   next();
+// });
 
-var whitelist = ['https://parrotsays.netlify.app', 'http://localhost:3000'];
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-};
+app.use(cors());
 
 const Authorization = `Basic ${Buffer.from(
   `${customerKey}:${customerSecret}`
@@ -72,7 +63,7 @@ const AppId = '306d86f1ec2644c3affab320daef132c';
 
 app.get('/', (req, res) => res.send('Agora Cloud Recording Server'));
 
-app.post('/acquire', cors(corsOptions), async (req, res) => {
+app.post('/acquire', async (req, res) => {
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${AppId}/cloud_recording/acquire`,
     {
@@ -88,7 +79,7 @@ app.post('/acquire', cors(corsOptions), async (req, res) => {
   res.send(acquire.data);
 });
 
-app.post('/start', cors(corsOptions), async (req, res) => {
+app.post('/start', async (req, res) => {
   const appID = AppId;
   const resource = req.body.resource;
   const mode = req.body.mode;
@@ -130,14 +121,13 @@ app.post('/start', cors(corsOptions), async (req, res) => {
       },
       { headers: { Authorization } }
     );
+    res.send(start.data);
   } catch (error) {
     console.error(error);
   }
-
-  res.send(start.data);
 });
 
-app.post('/query', cors(corsOptions), async (req, res) => {
+app.post('/query', async (req, res) => {
   const appID = AppId;
   const resource = req.body.resource;
   const sid = req.body.sid;
@@ -150,7 +140,7 @@ app.post('/query', cors(corsOptions), async (req, res) => {
   res.send(query.data);
 });
 
-app.post('/stop', cors(corsOptions), async (req, res) => {
+app.post('/stop', async (req, res) => {
   const appID = AppId;
   const resource = req.body.resource;
   const sid = req.body.sid;
