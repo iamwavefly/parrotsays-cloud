@@ -17,6 +17,20 @@ app.use(express.json());
 
 app.use(cors());
 
+app.use(function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+  res.header('Access-Control-Allow-Credentials', true);
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 const AppId = '306d86f1ec2644c3affab320daef132c';
 
 app.get('/', (req, res) => res.send('Agora Cloud Recording Server'));
