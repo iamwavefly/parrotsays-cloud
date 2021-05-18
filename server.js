@@ -47,12 +47,8 @@ app.use(cors());
 // CORS FUNC CONFIG
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
+  res.header('Access-Control-Allow-Headers', '*');
   res.header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-  res.header('Access-Control-Allow-Headers: *');
   res.header('Access-Control-Max-Age: 1728000');
   res.header('Content-Length: 0');
   res.header('Content-Type: text/plain');
